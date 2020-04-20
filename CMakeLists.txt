@@ -69,12 +69,19 @@ if(OpenCV_FOUND AND OPENCV)
 
     include_directories(OpticalFlow_INCLUDE_DIRS)
 
-    add_library( OpticalFlow SHARED
-      src/optical_flow.cpp
-      src/px4flow.cpp
-     	src/flow_px4.cpp
-    	src/flow_opencv.cpp
-    )
+    if (BUILD_SHARED_LIBS)
+        add_library( OpticalFlow SHARED
+          src/optical_flow.cpp
+          src/px4flow.cpp
+          src/flow_px4.cpp
+          src/flow_opencv.cpp)
+    else()
+        add_library( OpticalFlow STATIC
+          src/optical_flow.cpp
+          src/px4flow.cpp
+          src/flow_px4.cpp
+          src/flow_opencv.cpp)
+    endif()
 
     target_link_libraries( OpticalFlow
       ${OpenCV_LIBS}
@@ -89,11 +96,17 @@ else()
 
     include_directories(OpticalFlow_INCLUDE_DIRS)
 
-    add_library( OpticalFlow SHARED
-      src/optical_flow.cpp
-      src/px4flow.cpp
-     	src/flow_px4.cpp
-    )
+    if (BUILD_SHARED_LIBS)
+        add_library( OpticalFlow SHARED
+          src/optical_flow.cpp
+          src/px4flow.cpp
+          src/flow_px4.cpp)
+    else()
+        add_library( OpticalFlow STATIC
+          src/optical_flow.cpp
+          src/px4flow.cpp
+          src/flow_px4.cpp)
+    endif()
 
 endif()
 
@@ -102,20 +115,22 @@ target_include_directories(OpticalFlow PUBLIC include)
 # Generate the Config file from the .in file, doing @VAR@ substitution only
 configure_file(OpticalFlowConfig.cmake.in FindOpticalFlow.cmake @ONLY)
 
-# INSTALL STEPS
-INSTALL(
-  TARGETS OpticalFlow
-  RUNTIME DESTINATION lib
-  LIBRARY DESTINATION lib)
+# INSTALL STEP
+if (BUILD_SHARED_LIBS)
+    INSTALL(
+      TARGETS OpticalFlow
+      RUNTIME DESTINATION lib
+      LIBRARY DESTINATION lib)
 
-INSTALL(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/klt_feature_tracker/include/
-  DESTINATION include)
+    INSTALL(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/klt_feature_tracker/include/
+      DESTINATION include)
 
-INSTALL(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-  DESTINATION include)
+    INSTALL(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+      DESTINATION include)
 
-INSTALL(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/FindOpticalFlow.cmake
-  DESTINATION ${CMAKE_INSTALL_PREFIX})
+    INSTALL(
+      FILES ${CMAKE_CURRENT_BINARY_DIR}/FindOpticalFlow.cmake
+      DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
