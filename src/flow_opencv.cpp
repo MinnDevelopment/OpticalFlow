@@ -40,6 +40,15 @@
 
 #include "flow_opencv.hpp"
 
+#ifdef DEBUG
+#include<iostream>
+void printvec(std::vector<cv::Point2f>& vec) {
+    for (auto& p : vec) {
+        std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
+    }
+}
+#endif
+
 /****************************************************************************
  * OpenCV optical flow calculation
  ****************************************************************************/
@@ -104,6 +113,10 @@ int OpticalFlowOpenCV::calcFlow(uint8_t *img_current, const uint32_t &img_time_u
 	frame_gray.data = (uchar *)img_current;
 
 	trackFeatures(frame_gray, frame_gray, features_current, useless, updateVector, 0);
+#ifdef DEBUG
+    std::cout << "DEBUG(OpticalFlowOpenCV::calcFlow) features:" << std::endl;
+    printvec(features_current);
+#endif
 
 	if (set_camera_matrix && set_camera_distortion) {
 		features_tmp = features_current;
@@ -205,6 +218,8 @@ int OpticalFlowOpenCV::calcFlow(uint8_t *img_current, const uint32_t &img_time_u
 
 	flow_x = atan2(flow_x, focal_length_x); //convert pixel flow to angular flow
 	flow_y = atan2(flow_y, focal_length_y); //convert pixel flow to angular flow
-
+#ifdef DEBUG
+    std::cout << "Flow: " << flow_x << ", " << flow_y << std::endl;
+#endif
 	return flow_quality;
 }

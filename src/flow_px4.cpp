@@ -92,6 +92,10 @@ int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, 
 	flow_x = atan2(flow_x, focal_length_x); //convert pixel flow to angular flow
 	flow_y = atan2(flow_y, focal_length_y); //convert pixel flow to angular flow
 
+#ifdef DEBUG
+    std::cout << "DEBUG(OpticalFlowPX4::calcFlow):" << std::endl;
+    std::cout << "Flow: " << flow_x << ", " << flow_y << std::endl;
+#endif
 	return flow_quality;
 
 
